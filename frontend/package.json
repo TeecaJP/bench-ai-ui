@@ -1,0 +1,48 @@
+{
+  "name": "workout-analysis-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "prisma generate && next build",
+    "start": "next start",
+    "lint": "next lint",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "prisma:generate": "prisma generate",
+    "prisma:push": "prisma db push",
+    "prisma:studio": "prisma studio"
+  },
+  "dependencies": {
+    "next": "14.1.0",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "@prisma/client": "5.8.1",
+    "recharts": "2.10.3",
+    "class-variance-authority": "0.7.0",
+    "clsx": "2.1.0",
+    "tailwind-merge": "2.2.0",
+    "lucide-react": "0.314.0",
+    "@radix-ui/react-slot": "1.0.2",
+    "@radix-ui/react-dialog": "1.0.5",
+    "@radix-ui/react-progress": "1.0.3",
+    "date-fns": "3.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "20.11.5",
+    "@types/react": "18.2.48",
+    "@types/react-dom": "18.2.18",
+    "typescript": "5.3.3",
+    "tailwindcss": "3.4.1",
+    "postcss": "8.4.33",
+    "autoprefixer": "10.4.17",
+    "prisma": "5.8.1",
+    "vitest": "1.2.1",
+    "@vitejs/plugin-react": "4.2.1",
+    "@testing-library/react": "14.1.2",
+    "@testing-library/jest-dom": "6.2.0",
+    "jsdom": "24.0.0",
+    "openapi-typescript-codegen": "0.27.0",
+    "tailwindcss-animate": "1.0.7"
+  }
+}

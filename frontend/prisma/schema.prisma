@@ -1,0 +1,55 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Video {
+  id                String   @id @default(uuid())
+  filename          String
+  originalPath      String
+  processedPath     String?
+  status            String   @default("PENDING") // PENDING, PROCESSING, COMPLETED, FAILED
+  
+  // Analysis Results
+  overallStatus     String?
+  hipLiftDetected   Boolean?
+  hipLiftStatus     String?   // "OK", "FAIL: HIP LIFT"
+  shallowRepDetected Boolean?
+  shallowRepStatus  String?   // "OK", "FAIL: ELBOW DEPTH"
+  totalFrames       Int?
+  fps               Int?
+  videoDuration     Float?
+  
+  // Timestamps
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  // Relations
+  analysisData      AnalysisDataPoint[]
+  
+  @@map("videos")
+}
+
+model AnalysisDataPoint {
+  id              String   @id @default(uuid())
+  videoId         String
+  frame           Int
+  timestamp       Float
+  hipY            Float?
+  elbowY          Float?
+  shoulderY       Float?
+  benchDetected   Boolean
+  barDetected     Boolean
+  
+  video           Video    @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  
+  @@map("analysis_data_points")
+  @@index([videoId])
+}

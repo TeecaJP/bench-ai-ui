@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3333:3000"
+    volumes:
+      - ./storage:/app/storage
+      - ./db:/app/db
+      - ./frontend/src:/app/src
+      - ./frontend/prisma:/app/prisma
+    environment:
+      - DATABASE_URL=file:../db/dev.db
+      - NODE_ENV=development
+      - NEXT_PUBLIC_API_URL=http://backend:8000
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+  backend:
+    build:
+      context: ./ml-backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./storage:/app/storage
+      - ./ml-backend/models:/app/models
+      - ./ml-backend/app:/app/app
+    environment:
+      - PYTHONUNBUFFERED=1
+      - MODEL_PATH=/app/models/best.pt
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  storage:
+  db:
