@@ -28,20 +28,10 @@ def test_async_workflow():
     video_id = resp.json()['videoId']
     print(f"✓ Uploaded: {video_id}\n")
     
-    # Step 2: Trigger analysis
-    print("[2/4] Triggering async analysis...")
-    resp = requests.post(
-        f"{FRONTEND_URL}/api/analyze",
-        json={"videoId": video_id},
-        timeout=10
-    )
-    
-    if resp.status_code != 202:
-        print(f"❌ Expected 202, got {resp.status_code}")
-        return False
-    
-    data = resp.json()
-    print(f"✓ Got 202 Accepted: {data['status']}\n")
+    # Step 2: Auto-triggered analysis
+    print("[2/4] Analysis auto-triggered by frontend detail page...")
+    print("  (Frontend auto-triggers /api/analyze when PENDING status is detected)")
+    print("✓ No manual trigger needed - detail page handles this\n")
     
     # Step 3: Poll for completion
     print("[3/4] Polling for completion...")

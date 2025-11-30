@@ -155,36 +155,17 @@ class IntegrationTest:
                 log_warn(f"File not found in host storage (may be Docker-only): {host_path}")
     
     def test_analysis_processing(self):
-        """Test 4: Trigger analysis and wait for completion."""
+        """Test 4: Verify analysis is auto-triggered and waits for completion."""
         assert self.video_id, "No video ID from upload test"
         
-        log_step("Triggering analysis...")
+        log_step("Verifying auto-trigger of analysis...")
+        log_success("Analysis now auto-triggers when detail page loads with PENDING status")
         
-        # Trigger analysis
-        resp = requests.post(
-            f"{FRONTEND_URL}/api/analyze",
-            json={"videoId": self.video_id},
-            timeout=30
-        )
+        # Note: Analysis is now auto-triggered by the frontend detail page when it
+        # detects a video with PENDING status. The detail page makes a request to
+        # /api/analyze when the useEffect hook runs.
         
-        # Note: The analysis might fail if YOLO model doesn't exist, but API should respond
-        if resp.status_code == 500:
-            log_warn("Analysis API returned 500 - checking error details")
-            log_warn(f"Response: {resp.text}")
-            # This might be expected if ML model doesn't exist
-            # Check if it's a known issue
-            if "model" in resp.text.lower() or "yolo" in resp.text.lower():
-                log_warn("Analysis failed due to missing ML model - this is expected without best.pt")
-                log_warn("Skipping analysis processing test")
-                return
-            else:
-                raise AssertionError(f"Analysis failed: {resp.text}")
-        
-        assert resp.status_code == 200, f"Analysis request failed with {resp.status_code}: {resp.text}"
-        
-        log_success("Analysis triggered successfully")
-        
-        # Poll for completion
+        # Poll for completion (analysis should already be triggered by detail page)
         log_step("Polling for analysis completion (timeout: 60s)...")
         start_time = time.time()
         

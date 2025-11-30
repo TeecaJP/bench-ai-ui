@@ -37,6 +37,8 @@ Users run the application locally using Docker. It consists of a Next.js fronten
 - User uploads a video file via the UI.
 - Frontend saves the file to `storage/original-videos/`.
 - Frontend creates a record in SQLite (via Prisma) with status `PENDING`.
+- **After successful upload, user is immediately redirected to `/videos/[id]` (video detail page)**.
+- The detail page detects `PENDING` status and auto-triggers analysis via `/api/analyze`.
 
 ### Video Analysis
 1. **Asynchronous Processing**: Analysis runs in the background via `BackgroundTasks`, returning 202 Accepted immediately
@@ -96,12 +98,15 @@ Users run the application locally using Docker. It consists of a Next.js fronten
 
 #### Detail View
 - **Route**: `/videos/[id]` - Dynamic routing to individual video.
+- **Auto-trigger Analysis**: If video status is `PENDING`, automatically triggers analysis.
 - **Display**:
+  - Processing state during analysis with polling indicator
   - Video player (processed video if completed)
   - Analysis results (form issues, metrics)
   - Status badges
   - Video information (frames, FPS, duration)
 - **Navigation**: Back to library button.
+- **User Experience**: Users can safely close the page during processing and return later.
 
 ### D. Visualization
 - User views the processed video (skeleton/box overlay).
