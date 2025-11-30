@@ -205,3 +205,45 @@ COLOR_WHITE = (255, 255, 255)
   1. Checks if Docker containers are running.
   2. Hits the Backend health check endpoint (`GET /`).
   3. Verifies Database connection.
+
+## 8. Available Scripts
+
+This project includes several utility scripts in the `scripts/` directory to help manage the application lifecycle:
+
+### `scripts/start.sh`
+**Purpose**: Build and start the application  
+**Usage**: `./scripts/start.sh`  
+**Description**: 
+- Checks if Docker is running
+- Verifies YOLO model exists (with option to continue without it)
+- Creates necessary storage directories (`storage/original-videos`, `storage/processed-videos`, `db`)
+- Builds and starts Docker containers using `docker-compose up --build -d`
+- Runs health check to verify services are ready
+- Displays access URLs for frontend, backend, and API docs
+
+### `scripts/stop.sh`
+**Purpose**: Stop the application  
+**Usage**: `./scripts/stop.sh`  
+**Description**: 
+- Checks if Docker is running
+- Stops and removes all Docker containers using `docker compose down`
+- **Preserves all data** (database volumes and uploaded/processed videos)
+- Displays helpful next-step commands
+
+### `scripts/reset_data.sh`
+**Purpose**: Reset all application data  
+**Usage**: `./scripts/reset_data.sh`  
+**Description**: 
+- ⚠️ **WARNING**: Destructive operation - requires user confirmation
+- Deletes all uploaded videos from `storage/original-videos/`
+- Deletes all processed videos from `storage/processed-videos/`
+- Resets the entire database using `prisma migrate reset --force`
+- **Note**: Application must be running (containers must be up) for database reset to work
+
+### `scripts/health_check.sh`
+**Purpose**: Verify application health  
+**Usage**: `./scripts/health_check.sh`  
+**Description**: 
+- Called automatically by `start.sh`
+- Can be run manually to check service status
+- Verifies frontend and backend are responding correctly
