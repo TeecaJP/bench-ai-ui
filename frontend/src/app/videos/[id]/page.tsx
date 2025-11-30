@@ -21,6 +21,29 @@ export default function VideoDetailPage({ params }: VideoDetailPageProps) {
     enabled: true
   })
 
+  // Auto-trigger analysis for PENDING videos
+  useEffect(() => {
+    if (video && video.status === 'PENDING') {
+      const triggerAnalysis = async () => {
+        try {
+          const response = await fetch('/api/analyze', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ videoId: params.id })
+          })
+
+          if (!response.ok) {
+            console.error('Failed to trigger analysis:', response.statusText)
+          }
+        } catch (error) {
+          console.error('Error triggering analysis:', error)
+        }
+      }
+
+      triggerAnalysis()
+    }
+  }, [video?.status, params.id])
+
   if (isLoading) {
     return (
       <div className="container py-12">
