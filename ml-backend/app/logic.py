@@ -154,19 +154,19 @@ class WorkoutAnalyzer:
                         conf = float(box.conf[0])
                         x1, y1, x2, y2 = box.xyxy[0].cpu().numpy()
                         
-                        # Assuming class 0 = bench, class 1 = bar (adjust as needed)
+                        # Fixed: class 0 = bar, class 1 = bench (corrected mapping)
                         if cls_id == 0 and conf > 0.5:
-                            bench_box = (int(x1), int(y1), int(x2), int(y2))
-                            cv2.rectangle(annotated_frame, (bench_box[0], bench_box[1]), 
-                                        (bench_box[2], bench_box[3]), COLOR_GREEN, 2)
-                            cv2.putText(annotated_frame, "Bench", (bench_box[0], bench_box[1] - 10),
-                                      cv2.FONT_HERSHEY_SIMPLEX, 0.5, COLOR_GREEN, 2)
-                        elif cls_id == 1 and conf > 0.5:
                             bar_box = (int(x1), int(y1), int(x2), int(y2))
                             cv2.rectangle(annotated_frame, (bar_box[0], bar_box[1]), 
                                         (bar_box[2], bar_box[3]), COLOR_WHITE, 2)
                             cv2.putText(annotated_frame, "Bar", (bar_box[0], bar_box[1] - 10),
                                       cv2.FONT_HERSHEY_SIMPLEX, 0.5, COLOR_WHITE, 2)
+                        elif cls_id == 1 and conf > 0.5:
+                            bench_box = (int(x1), int(y1), int(x2), int(y2))
+                            cv2.rectangle(annotated_frame, (bench_box[0], bench_box[1]), 
+                                        (bench_box[2], bench_box[3]), COLOR_GREEN, 2)
+                            cv2.putText(annotated_frame, "Bench", (bench_box[0], bench_box[1] - 10),
+                                      cv2.FONT_HERSHEY_SIMPLEX, 0.5, COLOR_GREEN, 2)
                 
                 # --- MediaPipe Pose Detection ---
                 rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)

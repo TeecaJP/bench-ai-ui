@@ -56,3 +56,6 @@ htmlcov/
 
 # Prisma
 .prisma/
+
+# Pull Request Draft
+.PULL_REQUEST.md
