@@ -6,6 +6,7 @@ import { ArrowLeft } from "lucide-react"
 import { useVideoStatus } from "@/hooks/useVideoStatus"
 import { ProcessingStatus, LoadingSpinner } from "@/components/molecules/LoadingStatus"
 import { Badge } from "@/components/atoms/Badge"
+import { BarHeightChart } from "@/components/organisms/BarHeightChart"
 
 interface VideoDetailPageProps {
   params: {
@@ -106,75 +107,88 @@ export default function VideoDetailPage({ params }: VideoDetailPageProps) {
 
       {/* Main Content Area */}
       {isCompleted && video.processedPath ? (
-        <div className="flex-1 overflow-hidden grid grid-cols-1 md:grid-cols-[60%_40%]">
-          {/* Left: Video Player */}
-          <div className="flex items-center justify-center bg-black/5 p-4 overflow-hidden h-[40vh] md:h-auto">
-            <video
-              controls
-              className="max-w-full max-h-full object-contain"
-              src={`/api/stream?path=${encodeURIComponent(video.processedPath)}`}
-            >
-              Your browser does not support the video tag.
-            </video>
-          </div>
+        <div className="flex-1 overflow-y-auto">
+          <div className="grid grid-cols-1 md:grid-cols-[60%_40%]">
+            {/* Left: Video Player */}
+            <div className="flex items-center justify-center bg-black/5 p-4 h-[40vh] md:h-[60vh]">
+              <video
+                controls
+                className="max-w-full max-h-full object-contain"
+                src={`/api/stream?path=${encodeURIComponent(video.processedPath)}`}
+              >
+                Your browser does not support the video tag.
+              </video>
+            </div>
 
-          {/* Right: Stats Panel (Scrollable) */}
-          <div className="overflow-y-auto p-6 border-l">
-            <h2 className="text-xl font-semibold mb-4">Analysis Results</h2>
-            
-            <div className="space-y-4">
-              {/* Overall Status Card */}
-              <div className="rounded-lg border p-4">
-                <h3 className="font-semibold mb-2">Overall Status</h3>
-                <div className="mt-2">
-                  <Badge 
-                    variant={video.overallStatus?.includes('GOOD') ? 'default' : 'destructive'}
-                    className="text-lg px-3 py-1"
-                  >
-                    {video.overallStatus || (video.status === 'COMPLETED' ? 'N/A' : 'PROCESSING')}
-                  </Badge>
-                </div>
-              </div>
-
-              {/* Form Analysis Card */}
-              <div className="rounded-lg border p-4">
-                <h3 className="font-semibold mb-2">Form Analysis</h3>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between items-center">
-                    <span>Hip Lift:</span>
-                    <Badge variant={video.hipLiftDetected ? 'destructive' : 'default'}>
-                      {video.hipLiftStatus || 'N/A'}
-                    </Badge>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span>Shallow Rep:</span>
-                    <Badge variant={video.shallowRepDetected ? 'destructive' : 'default'}>
-                      {video.shallowRepStatus || 'N/A'}
+            {/* Right: Stats Panel */}
+            <div className="p-6 border-l">
+              <h2 className="text-xl font-semibold mb-4">Analysis Results</h2>
+              
+              <div className="space-y-4">
+                {/* Overall Status Card */}
+                <div className="rounded-lg border p-4">
+                  <h3 className="font-semibold mb-2">Overall Status</h3>
+                  <div className="mt-2">
+                    <Badge 
+                      variant={video.overallStatus?.includes('GOOD') ? 'default' : 'destructive'}
+                      className="text-lg px-3 py-1"
+                    >
+                      {video.overallStatus || (video.status === 'COMPLETED' ? 'N/A' : 'PROCESSING')}
                     </Badge>
                   </div>
                 </div>
-              </div>
 
-              {/* Video Info Card */}
-              <div className="rounded-lg border p-4">
-                <h3 className="font-semibold mb-2">Video Info</h3>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span>Total Frames:</span>
-                    <span>{video.totalFrames || 'N/A'}</span>
+                {/* Form Analysis Card */}
+                <div className="rounded-lg border p-4">
+                  <h3 className="font-semibold mb-2">Form Analysis</h3>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between items-center">
+                      <span>Hip Lift:</span>
+                      <Badge variant={video.hipLiftDetected ? 'destructive' : 'default'}>
+                        {video.hipLiftStatus || 'N/A'}
+                      </Badge>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span>Shallow Rep:</span>
+                      <Badge variant={video.shallowRepDetected ? 'destructive' : 'default'}>
+                        {video.shallowRepStatus || 'N/A'}
+                      </Badge>
+                    </div>
                   </div>
-                  <div className="flex justify-between">
-                    <span>FPS:</span>
-                    <span>{video.fps || 'N/A'}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Duration:</span>
-                    <span>{video.videoDuration ? `${video.videoDuration.toFixed(1)}s` : 'N/A'}</span>
+                </div>
+
+                {/* Video Info Card */}
+                <div className="rounded-lg border p-4">
+                  <h3 className="font-semibold mb-2">Video Info</h3>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span>Total Frames:</span>
+                      <span>{video.totalFrames || 'N/A'}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>FPS:</span>
+                      <span>{video.fps || 'N/A'}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Duration:</span>
+                      <span>{video.videoDuration ? `${video.videoDuration.toFixed(1)}s` : 'N/A'}</span>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
+
+          {/* Bar Height Chart - Full Width Below */}
+          {video.analysisData && video.analysisData.length > 0 && (
+            <div className="p-6 border-t">
+              <BarHeightChart 
+                data={video.analysisData} 
+                title="Bar Height Over Time"
+                description="Vertical position of the bar during the workout (lower values indicate bar is closer to chest)"
+              />
+            </div>
+          )}
         </div>
       ) : (
         <div className="flex-1 flex items-center justify-center">
