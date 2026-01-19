@@ -168,6 +168,11 @@ class WorkoutAnalyzer:
                             cv2.putText(annotated_frame, "Bench", (bench_box[0], bench_box[1] - 10),
                                       cv2.FONT_HERSHEY_SIMPLEX, 0.5, COLOR_GREEN, 2)
                 
+                # Calculate bar center Y position for graph display (outside pose detection)
+                current_bar_y = None
+                if bar_box:
+                    current_bar_y = (bar_box[1] + bar_box[3]) / 2
+                
                 # --- MediaPipe Pose Detection ---
                 rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                 pose_results = pose.process(rgb_frame)
@@ -175,7 +180,6 @@ class WorkoutAnalyzer:
                 current_hip_y = None
                 current_elbow_y = None
                 current_shoulder_y = None
-                current_bar_y = None
                 
                 if pose_results.pose_landmarks:
                     # Draw pose skeleton
@@ -224,8 +228,6 @@ class WorkoutAnalyzer:
                     # --- Shallow Rep Detection (State Machine) ---
                     if bar_box:
                         avg_bar_bottom_y = bar_box[3]
-                        # Calculate bar center Y position for graph display
-                        current_bar_y = (bar_box[1] + bar_box[3]) / 2
                         avg_shoulder_line_y = current_shoulder_y
                         avg_elbow_line_y = smoothed_elbow_y
                         
