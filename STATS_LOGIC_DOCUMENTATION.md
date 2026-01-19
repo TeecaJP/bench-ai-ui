@@ -164,6 +164,11 @@ results = {
 }
 ```
 
+**ポーリング**: `frontend/src/app/api/analyze/route.ts` (行88-157の`pollForCompletion`関数)
+- 5秒ごとにポーリング（最大120回 = 10分間）
+- 処理済み動画ファイルとJSON結果ファイルの存在を確認
+- タイムアウト時は動画ステータスをFAILEDに設定
+
 **データベース保存**: `frontend/src/app/api/analyze/route.ts` (行126-141)
 ```typescript
 await prisma.video.update({

@@ -91,10 +91,12 @@ for each frame:
 
 **File**: `frontend/src/app/api/analyze/route.ts` - `pollForCompletion()`
 
-Polls every 5 seconds checking for:
+Polls every 5 seconds (up to 120 attempts = 10 minutes max) checking for:
 1. Processed video file exists
 2. JSON results file exists
 3. Updates database with results
+
+If timeout is reached (10 minutes), the video status is set to FAILED.
 
 ### 3. UI Display Phase
 
