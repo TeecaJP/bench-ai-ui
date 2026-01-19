@@ -10,7 +10,6 @@ export interface TimeSeriesDataPoint {
   hipY: number | null;
   elbowY: number | null;
   shoulderY: number | null;
-  barY: number | null;
   benchDetected: boolean;
   barDetected: boolean;
 }

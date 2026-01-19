@@ -58,7 +58,6 @@ class TestAnalyzeEndpoint:
                     "hip_y": 100.5,
                     "elbow_y": 150.2,
                     "shoulder_y": 120.8,
-                    "bar_y": 80.3,
                     "bench_detected": True,
                     "bar_detected": True,
                 }
@@ -208,7 +207,6 @@ class TestAnalyzeEndpointIntegration:
                 "hip_y": 200.0 + (i % 10) * 2,
                 "elbow_y": 180.0 + (i % 15) * 3,
                 "shoulder_y": 150.0 + (i % 5) * 1,
-                "bar_y": 100.0 + (i % 8) * 2,
                 "bench_detected": True,
                 "bar_detected": i % 3 == 0,  # Bar detection intermittent
             }
