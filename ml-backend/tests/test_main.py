@@ -58,6 +58,7 @@ class TestAnalyzeEndpoint:
                     "hip_y": 100.5,
                     "elbow_y": 150.2,
                     "shoulder_y": 120.8,
+                    "bar_y": 200.0,
                     "bench_detected": True,
                     "bar_detected": True,
                 }

@@ -256,12 +256,18 @@ class WorkoutAnalyzer:
                             self.min_elbow_y_at_bottom = 2000
                 
                 # --- Store time series data ---
+                # Calculate bar Y position (use bottom of bar box for height tracking)
+                current_bar_y = None
+                if bar_box:
+                    current_bar_y = float(bar_box[3])  # Bottom Y coordinate of bar
+                
                 time_series_data.append({
                     "frame": frame_idx,
                     "timestamp": frame_idx / fps,
                     "hip_y": float(current_hip_y) if current_hip_y else None,
                     "elbow_y": float(current_elbow_y) if current_elbow_y else None,
                     "shoulder_y": float(current_shoulder_y) if current_shoulder_y else None,
+                    "bar_y": current_bar_y,
                     "bench_detected": bench_box is not None,
                     "bar_detected": bar_box is not None
                 })

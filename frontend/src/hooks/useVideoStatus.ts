@@ -1,5 +1,16 @@
 import { useState, useEffect } from 'react'
 
+interface AnalysisDataPoint {
+  frame: number
+  timestamp: number
+  hipY: number | null
+  elbowY: number | null
+  shoulderY: number | null
+  barY: number | null
+  benchDetected: boolean
+  barDetected: boolean
+}
+
 interface Video {
   id: string
   filename: string
@@ -16,6 +27,7 @@ interface Video {
   videoDuration: number | null
   createdAt: string
   updatedAt: string
+  analysisData?: AnalysisDataPoint[]
 }
 
 interface UseVideoStatusOptions {

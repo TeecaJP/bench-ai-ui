@@ -45,6 +45,7 @@ model AnalysisDataPoint {
   hipY            Float?
   elbowY          Float?
   shoulderY       Float?
+  barY            Float?
   benchDetected   Boolean
   barDetected     Boolean
   

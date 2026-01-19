@@ -57,5 +57,11 @@ htmlcov/
 # Prisma
 .prisma/
 
+# TypeScript build info
+tsconfig.tsbuildinfo
+
+# Next.js
+next-env.d.ts
+
 # Pull Request Draft
 .PULL_REQUEST.md
