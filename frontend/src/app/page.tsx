@@ -12,21 +12,19 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="h-full bg-background flex flex-col items-center justify-center">
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4">
         <div className="max-w-2xl mx-auto">
           <VideoUploader onUploadComplete={handleUploadComplete} />
         </div>
       </main>
 
       {/* Footer */}
-      <footer className="border-t mt-16">
-        <div className="container mx-auto px-4 py-6">
-          <p className="text-sm text-center text-muted-foreground">
-            Powered by YOLO, MediaPipe, and Next.js | Local-First Analysis
-          </p>
-        </div>
+      <footer className="mt-8">
+        <p className="text-sm text-center text-muted-foreground">
+          Powered by YOLO, MediaPipe, and Next.js | Local-First Analysis
+        </p>
       </footer>
     </div>
   )

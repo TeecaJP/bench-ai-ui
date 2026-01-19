@@ -31,7 +31,48 @@ Users run the application locally using Docker. It consists of a Next.js fronten
   - Process videos using the logic defined in the **Appendix**.
   - Return analysis results and paths to processed videos.
 
-## 4. Functional Requirements
+## 4. UI/UX Layout Requirements
+
+### Dashboard-Style Layout (First View Only)
+
+The application uses a **fixed-height, no-scroll dashboard layout** where all critical information is visible within the viewport without requiring page-level scrolling.
+
+**Global Layout Principles:**
+- Root container uses `h-screen` (100vh) with `overflow-hidden` to prevent browser-level scrolling
+- Fixed header at `h-16` (64px) height
+- Main content area uses `flex-1` to fill remaining viewport height
+- Individual sections may scroll internally when content exceeds available space
+
+**Page-Specific Layouts:**
+
+#### Upload Page (`/`)
+- Full-height centered layout
+- Upload component and footer centered within viewport
+- No scrolling required
+
+#### Video Library (`/videos`)
+- **Fixed header section**: Page title and description
+- **Scrollable grid**: Video cards grid with `overflow-y-auto`
+- Header remains visible while grid scrolls internally
+
+#### Video Detail Page (`/videos/[id]`)
+- **Desktop Layout (md breakpoint and above)**:
+  - Split-screen design: 60% video (left) / 40% stats (right)
+  - Video player: Uses `object-contain` to fit within available height
+  - Stats panel: Scrollable internally (`overflow-y-auto`) if content exceeds height
+  - No outer page scroll
+- **Mobile Layout**:
+  - Vertical stack: Video player (~40vh) + Stats panel (remaining space)
+  - Stats panel scrollable internally
+  - Video height constrained to ensure both sections visible
+
+**Benefits:**
+- ✅ **Improved UX**: Users can watch video and view stats simultaneously
+- ✅ **No Context Loss**: Critical information always visible
+- ✅ **Responsive**: Adapts to different screen sizes while maintaining principles
+- ✅ **Professional**: Modern dashboard aesthetic
+
+## 5. Functional Requirements
 
 ### A. Video Upload
 - User uploads a video file via the UI.
@@ -98,15 +139,19 @@ Users run the application locally using Docker. It consists of a Next.js fronten
 
 #### Detail View
 - **Route**: `/videos/[id]` - Dynamic routing to individual video.
+- **Layout**: Dashboard-style split-screen (desktop) or vertical stack (mobile) - see § 4 UI/UX Layout Requirements.
 - **Auto-trigger Analysis**: If video status is `PENDING`, automatically triggers analysis.
 - **Display**:
-  - Processing state during analysis with polling indicator
-  - Video player (processed video if completed)
-  - Analysis results (form issues, metrics)
-  - Status badges
+  - Processing state during analysis with polling indicator (centered, full-height)
+  - **Video player** (left/top): Processed video with `object-contain`, fits within viewport
+  - **Stats panel** (right/bottom): Analysis results, metrics, scrollable if needed
+  - Status badges in fixed header
   - Video information (frames, FPS, duration)
-- **Navigation**: Back to library button.
-- **User Experience**: Users can safely close the page during processing and return later.
+- **Navigation**: Back to library button in fixed header.
+- **User Experience**: 
+  - Users can safely close the page during processing and return later
+  - **No page-level scrolling** - all content visible or accessible via internal panel scrolling
+  - Video and statistics simultaneously visible on desktop
 
 ### D. Visualization
 - User views the processed video (skeleton/box overlay).

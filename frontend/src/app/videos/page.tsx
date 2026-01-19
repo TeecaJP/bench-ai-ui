@@ -60,7 +60,7 @@ export default function VideosPage() {
 
   if (isLoading) {
     return (
-      <div className="container py-12">
+      <div className="h-full flex items-center justify-center">
         <LoadingSpinner text="Loading videos..." />
       </div>
     )
@@ -68,8 +68,8 @@ export default function VideosPage() {
 
   if (error) {
     return (
-      <div className="container py-12">
-        <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-6 text-center">
+      <div className="h-full flex items-center justify-center px-4">
+        <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-6 text-center max-w-md">
           <p className="text-destructive">{error}</p>
           <button
             onClick={fetchVideos}
@@ -83,35 +83,39 @@ export default function VideosPage() {
   }
 
   return (
-    <div className="container py-8">
-      <div className="mb-8">
+    <div className="h-full flex flex-col">
+      {/* Fixed Header */}
+      <div className="px-8 pt-8 pb-4">
         <h1 className="text-3xl font-bold tracking-tight">Video Library</h1>
         <p className="text-muted-foreground mt-2">
           All your uploaded workout videos
         </p>
       </div>
 
-      {videos.length === 0 ? (
-        <div className="rounded-lg border border-dashed p-12 text-center">
-          <p className="text-muted-foreground mb-4">No videos yet</p>
-          <a
-            href="/"
-            className="inline-flex items-center px-4 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90"
-          >
-            Upload your first video
-          </a>
-        </div>
-      ) : (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {videos.map(video => (
-            <VideoCard
-              key={video.id}
-              video={video}
-              onDelete={handleDelete}
-            />
-          ))}
-        </div>
-      )}
+      {/* Scrollable Content */}
+      <div className="flex-1 overflow-y-auto px-8 pb-8">
+        {videos.length === 0 ? (
+          <div className="rounded-lg border border-dashed p-12 text-center">
+            <p className="text-muted-foreground mb-4">No videos yet</p>
+            <a
+              href="/"
+              className="inline-flex items-center px-4 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90"
+            >
+              Upload your first video
+            </a>
+          </div>
+        ) : (
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {videos.map(video => (
+              <VideoCard
+                key={video.id}
+                video={video}
+                onDelete={handleDelete}
+              />
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   )
 }
