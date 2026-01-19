@@ -168,6 +168,11 @@ class WorkoutAnalyzer:
                             cv2.putText(annotated_frame, "Bench", (bench_box[0], bench_box[1] - 10),
                                       cv2.FONT_HERSHEY_SIMPLEX, 0.5, COLOR_GREEN, 2)
                 
+                # Calculate bar center Y position for graph display (outside pose detection)
+                current_bar_y = None
+                if bar_box:
+                    current_bar_y = (bar_box[1] + bar_box[3]) / 2
+                
                 # --- MediaPipe Pose Detection ---
                 rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                 pose_results = pose.process(rgb_frame)
@@ -262,6 +267,7 @@ class WorkoutAnalyzer:
                     "hip_y": float(current_hip_y) if current_hip_y else None,
                     "elbow_y": float(current_elbow_y) if current_elbow_y else None,
                     "shoulder_y": float(current_shoulder_y) if current_shoulder_y else None,
+                    "bar_y": float(current_bar_y) if current_bar_y else None,
                     "bench_detected": bench_box is not None,
                     "bar_detected": bar_box is not None
                 })

@@ -50,6 +50,7 @@ class TimeSeriesDataPoint(BaseModel):
     hip_y: Optional[float]
     elbow_y: Optional[float]
     shoulder_y: Optional[float]
+    bar_y: Optional[float]
     bench_detected: bool
     bar_detected: bool
 
