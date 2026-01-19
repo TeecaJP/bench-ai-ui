@@ -175,6 +175,7 @@ class WorkoutAnalyzer:
                 current_hip_y = None
                 current_elbow_y = None
                 current_shoulder_y = None
+                current_bar_y = None
                 
                 if pose_results.pose_landmarks:
                     # Draw pose skeleton
@@ -223,6 +224,8 @@ class WorkoutAnalyzer:
                     # --- Shallow Rep Detection (State Machine) ---
                     if bar_box:
                         avg_bar_bottom_y = bar_box[3]
+                        # Calculate bar center Y position for graph display
+                        current_bar_y = (bar_box[1] + bar_box[3]) / 2
                         avg_shoulder_line_y = current_shoulder_y
                         avg_elbow_line_y = smoothed_elbow_y
                         
@@ -262,6 +265,7 @@ class WorkoutAnalyzer:
                     "hip_y": float(current_hip_y) if current_hip_y else None,
                     "elbow_y": float(current_elbow_y) if current_elbow_y else None,
                     "shoulder_y": float(current_shoulder_y) if current_shoulder_y else None,
+                    "bar_y": float(current_bar_y) if current_bar_y else None,
                     "bench_detected": bench_box is not None,
                     "bar_detected": bar_box is not None
                 })

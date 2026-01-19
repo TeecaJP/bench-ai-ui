@@ -18,6 +18,7 @@ export function TimeSeriesChart({ data, title = "Movement Analysis", description
     hip: point.hipY,
     elbow: point.elbowY,
     shoulder: point.shoulderY,
+    bar: point.barY,
   }))
 
   return (
@@ -45,6 +46,7 @@ export function TimeSeriesChart({ data, title = "Movement Analysis", description
             <Line type="monotone" dataKey="hip" stroke="#8884d8" name="Hip" strokeWidth={2} />
             <Line type="monotone" dataKey="elbow" stroke="#82ca9d" name="Elbow" strokeWidth={2} />
             <Line type="monotone" dataKey="shoulder" stroke="#ffc658" name="Shoulder" strokeWidth={2} />
+            <Line type="monotone" dataKey="bar" stroke="#ff6b6b" name="Bar" strokeWidth={2} />
           </LineChart>
         </ResponsiveContainer>
       </CardContent>
