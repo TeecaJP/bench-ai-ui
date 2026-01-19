@@ -46,7 +46,7 @@ export default function VideoDetailPage({ params }: VideoDetailPageProps) {
 
   if (isLoading) {
     return (
-      <div className="container py-12">
+      <div className="h-full flex items-center justify-center">
         <LoadingSpinner text="Loading video..." />
       </div>
     )
@@ -54,8 +54,8 @@ export default function VideoDetailPage({ params }: VideoDetailPageProps) {
 
   if (error || !video) {
     return (
-      <div className="container py-12">
-        <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-6 text-center">
+      <div className="h-full flex items-center justify-center px-4">
+        <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-6 text-center max-w-md">
           <p className="text-destructive">{error || 'Video not found'}</p>
           <button
             onClick={() => router.push('/videos')}
@@ -70,7 +70,7 @@ export default function VideoDetailPage({ params }: VideoDetailPageProps) {
 
   if (isProcessing) {
     return (
-      <div className="container py-12">
+      <div className="h-full flex items-center justify-center">
         <ProcessingStatus 
           message="Processing video..."
           subMessage="This may take several minutes. You can close this page and come back later."
@@ -80,17 +80,18 @@ export default function VideoDetailPage({ params }: VideoDetailPageProps) {
   }
 
   return (
-    <div className="container py-8">
-      <button
-        onClick={() => router.push('/videos')}
-        className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        Back to Library
-      </button>
+    <div className="h-full flex flex-col">
+      {/* Header Bar */}
+      <div className="border-b px-6 py-4 flex-shrink-0">
+        <button
+          onClick={() => router.push('/videos')}
+          className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-3"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back to Library
+        </button>
 
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold tracking-tight mb-2">{video.filename}</h1>
+        <h1 className="text-2xl font-bold tracking-tight mb-2">{video.filename}</h1>
         <div className="flex gap-2">
           <Badge variant={video.status === 'COMPLETED' ? 'default' : 'secondary'}>
             {video.status}
@@ -103,77 +104,85 @@ export default function VideoDetailPage({ params }: VideoDetailPageProps) {
         </div>
       </div>
 
+      {/* Main Content Area */}
       {isCompleted && video.processedPath ? (
-        <div className="space-y-6">
-          {/* Video Player */}
-          <div className="rounded-lg border overflow-hidden">
+        <div className="flex-1 overflow-hidden grid grid-cols-1 md:grid-cols-[60%_40%]">
+          {/* Left: Video Player */}
+          <div className="flex items-center justify-center bg-black/5 p-4 overflow-hidden h-[40vh] md:h-auto">
             <video
               controls
-              className="w-full"
+              className="max-w-full max-h-full object-contain"
               src={`/api/stream?path=${encodeURIComponent(video.processedPath)}`}
             >
               Your browser does not support the video tag.
             </video>
           </div>
 
-          {/* Analysis Results */}
-          <div className="grid gap-4 md:grid-cols-3">
-            {/* Overall Status Card */}
-            <div className="rounded-lg border p-4">
-              <h3 className="font-semibold mb-2">Overall Status</h3>
-              <div className="mt-2">
-                <Badge 
-                  variant={video.overallStatus?.includes('GOOD') ? 'default' : 'destructive'}
-                  className="text-lg px-3 py-1"
-                >
-                  {video.overallStatus || (video.status === 'COMPLETED' ? 'N/A' : 'PROCESSING')}
-                </Badge>
-              </div>
-            </div>
-
-            {/* Form Analysis Card */}
-            <div className="rounded-lg border p-4">
-              <h3 className="font-semibold mb-2">Form Analysis</h3>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between items-center">
-                  <span>Hip Lift:</span>
-                  <Badge variant={video.hipLiftDetected ? 'destructive' : 'default'}>
-                    {video.hipLiftStatus || 'N/A'}
-                  </Badge>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span>Shallow Rep:</span>
-                  <Badge variant={video.shallowRepDetected ? 'destructive' : 'default'}>
-                    {video.shallowRepStatus || 'N/A'}
+          {/* Right: Stats Panel (Scrollable) */}
+          <div className="overflow-y-auto p-6 border-l">
+            <h2 className="text-xl font-semibold mb-4">Analysis Results</h2>
+            
+            <div className="space-y-4">
+              {/* Overall Status Card */}
+              <div className="rounded-lg border p-4">
+                <h3 className="font-semibold mb-2">Overall Status</h3>
+                <div className="mt-2">
+                  <Badge 
+                    variant={video.overallStatus?.includes('GOOD') ? 'default' : 'destructive'}
+                    className="text-lg px-3 py-1"
+                  >
+                    {video.overallStatus || (video.status === 'COMPLETED' ? 'N/A' : 'PROCESSING')}
                   </Badge>
                 </div>
               </div>
-            </div>
 
-            <div className="rounded-lg border p-4">
-              <h3 className="font-semibold mb-2">Video Info</h3>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span>Total Frames:</span>
-                  <span>{video.totalFrames || 'N/A'}</span>
+              {/* Form Analysis Card */}
+              <div className="rounded-lg border p-4">
+                <h3 className="font-semibold mb-2">Form Analysis</h3>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between items-center">
+                    <span>Hip Lift:</span>
+                    <Badge variant={video.hipLiftDetected ? 'destructive' : 'default'}>
+                      {video.hipLiftStatus || 'N/A'}
+                    </Badge>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span>Shallow Rep:</span>
+                    <Badge variant={video.shallowRepDetected ? 'destructive' : 'default'}>
+                      {video.shallowRepStatus || 'N/A'}
+                    </Badge>
+                  </div>
                 </div>
-                <div className="flex justify-between">
-                  <span>FPS:</span>
-                  <span>{video.fps || 'N/A'}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Duration:</span>
-                  <span>{video.videoDuration ? `${video.videoDuration.toFixed(1)}s` : 'N/A'}</span>
+              </div>
+
+              {/* Video Info Card */}
+              <div className="rounded-lg border p-4">
+                <h3 className="font-semibold mb-2">Video Info</h3>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span>Total Frames:</span>
+                    <span>{video.totalFrames || 'N/A'}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>FPS:</span>
+                    <span>{video.fps || 'N/A'}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Duration:</span>
+                    <span>{video.videoDuration ? `${video.videoDuration.toFixed(1)}s` : 'N/A'}</span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
       ) : (
-        <div className="rounded-lg border border-dashed p-12 text-center">
-          <p className="text-muted-foreground">
-            {video.status === 'FAILED' ? 'Analysis failed' : 'No analysis results available'}
-          </p>
+        <div className="flex-1 flex items-center justify-center">
+          <div className="rounded-lg border border-dashed p-12 text-center">
+            <p className="text-muted-foreground">
+              {video.status === 'FAILED' ? 'Analysis failed' : 'No analysis results available'}
+            </p>
+          </div>
         </div>
       )}
     </div>
