@@ -123,6 +123,33 @@ async function pollForCompletion(videoId: string, outputPath: string) {
         // Processing complete!
         clearInterval(pollInterval)
 
+        // Save time series data if available
+        if (analysisResults.time_series_data && Array.isArray(analysisResults.time_series_data)) {
+          console.log(`Saving ${analysisResults.time_series_data.length} data points for video ${videoId}`)
+          
+          // Delete any existing data points first to avoid duplicates on retry
+          await prisma.analysisDataPoint.deleteMany({
+            where: { videoId: videoId }
+          })
+
+          // Map snake_case from JSON to camelCase for Prisma and create individually for SQLite compatibility
+          for (const point of analysisResults.time_series_data) {
+            await prisma.analysisDataPoint.create({
+              data: {
+                videoId: videoId,
+                frame: point.frame,
+                timestamp: point.timestamp,
+                hipY: point.hip_y,
+                elbowY: point.elbow_y,
+                shoulderY: point.shoulder_y,
+                barY: point.bar_y,
+                benchDetected: point.bench_detected || false,
+                barDetected: point.bar_detected || false,
+              }
+            })
+          }
+        }
+
         await prisma.video.update({
           where: { id: videoId },
           data: {

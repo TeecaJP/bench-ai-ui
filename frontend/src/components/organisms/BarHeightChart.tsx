@@ -11,20 +11,15 @@ interface BarHeightChartProps {
   description?: string
 }
 
-export function BarHeightChart({ 
-  data, 
-  title = "Bar Height Over Time", 
-  description = "Bar position during workout (lower values = bar closer to chest)"
+export function BarHeightChart({
+  data,
+  title = "Bar Height Over Time",
+  description = "Bar position during workout"
 }: BarHeightChartProps) {
-  // Filter and transform data for recharts - only include frames where bar is detected
-  const chartData = data
-    .filter((point) => point.barDetected && point.barY !== null)
-    .map((point) => ({
-      timestamp: point.timestamp.toFixed(2),
-      barHeight: point.barY,
-    }))
+  // Filter and find the baseline (maximum Y value = chest level)
+  const validPoints = data.filter((point) => point.barDetected && point.barY !== null)
 
-  if (chartData.length === 0) {
+  if (validPoints.length === 0) {
     return (
       <Card>
         <CardHeader>
@@ -43,6 +38,15 @@ export function BarHeightChart({
     )
   }
 
+  // Find max barY to use as chest baseline
+  const maxBarY = Math.max(...validPoints.map(p => p.barY as number))
+
+  // Transform data for recharts - height from chest
+  const chartData = validPoints.map((point) => ({
+    timestamp: point.timestamp, // number for numeric axis
+    barHeight: Math.max(0, maxBarY - (point.barY as number)),
+  }))
+
   return (
     <Card>
       <CardHeader>
@@ -54,23 +58,29 @@ export function BarHeightChart({
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={chartData}>
+          <LineChart
+            data={chartData}
+            margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
+          >
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis 
-              dataKey="timestamp" 
+            <XAxis
+              dataKey="timestamp"
+              type="number"
+              domain={[0, 'auto']}
               label={{ value: 'Time (s)', position: 'insideBottom', offset: -5 }}
             />
-            <YAxis 
-              label={{ value: 'Bar Height (px)', angle: -90, position: 'insideLeft' }}
-              reversed
+            <YAxis
+              width={80}
+              label={{ value: 'Bar Height (px)', angle: -90, position: 'insideLeft', offset: 0 }}
+              padding={{ top: 20, bottom: 20 }}
             />
             <Tooltip />
             <Legend />
-            <Line 
-              type="monotone" 
-              dataKey="barHeight" 
-              stroke="#ff6b6b" 
-              name="Bar Height" 
+            <Line
+              type="monotone"
+              dataKey="barHeight"
+              stroke="#ff6b6b"
+              name="Bar Height"
               strokeWidth={2}
               dot={false}
             />
