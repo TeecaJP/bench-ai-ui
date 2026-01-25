@@ -92,7 +92,7 @@ pytest tests/ -v
 **Frontend Tests**:
 ```bash
 cd frontend
-npm test
+bun test
 ```
 
 **Health Check**:

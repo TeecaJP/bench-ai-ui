@@ -95,7 +95,7 @@ docker-compose up --build
 
 # 3. Initialize database (first run only)
 cd frontend
-npm install
+bun install
 npx prisma generate
 npx prisma db push
 ```
@@ -109,7 +109,7 @@ npx prisma db push
 cd ml-backend && pytest tests/ -v
 
 # Frontend tests  
-cd frontend && npm test
+cd frontend && bun test
 
 # Health check
 ./scripts/health_check.sh
