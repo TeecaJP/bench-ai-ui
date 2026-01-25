@@ -2,6 +2,9 @@
 
 # Quick start script for the Workout Analysis App
 
+# Navigate to the project root directory
+cd "$(dirname "$0")/.." || exit 1
+
 echo "🚀 Starting Workout Analysis App..."
 echo "======================================"
 echo ""
