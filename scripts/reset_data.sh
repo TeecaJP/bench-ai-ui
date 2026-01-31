@@ -65,7 +65,7 @@ if ! docker compose ps | grep -q "bench-ai-ui_frontend_1"; then
 fi
 
 echo "Running 'prisma migrate reset' inside frontend container..."
-docker compose exec frontend npx prisma migrate reset --force
+docker compose exec frontend bunx prisma migrate reset --force --skip-generate
 
 if [ $? -eq 0 ]; then
     echo -e "${GREEN}Database reset successfully.${NC}"
