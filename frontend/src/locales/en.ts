@@ -47,5 +47,9 @@ export const en: Dictionary = {
     depth: 'Depth',
     maxDeviation: 'Max Deviation',
     margin: 'Margin',
+    bounceTolerance: 'Bounce Tolerance',
+    bounceToleranceDesc: 'Adjust the sensitivity of bounce detection (acceleration).',
+    bounce: 'Bounce',
+    maxAcceleration: 'Peak Accel',
   },
 };

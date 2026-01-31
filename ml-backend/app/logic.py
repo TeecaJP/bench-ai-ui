@@ -77,6 +77,7 @@ class RepStateMachine:
         self.setup_bar_y = None
         
         self.state_start_time = 0
+        self.prev_bar_velocity = 0
         
         # Rep Tracking
         self.current_rep_data = self._init_rep_data()
@@ -96,6 +97,7 @@ class RepStateMachine:
             # Actually, depth ratio: (ElbowY - ShoulderY) / Torso. Positive = Deeper.
             # We want to track the MAX depth reached.
             "max_elbow_depth_ratio": -1.0,
+            "max_upward_acceleration_ratio": 0.0,
             "rep_duration": 0.0
         }
 
@@ -107,6 +109,17 @@ class RepStateMachine:
         """
         if self.state_start_time == 0:
             self.state_start_time = current_time
+
+        # --- Bar velocity & Acceleration ---
+        bar_velocity = 0
+        acceleration_up = 0
+        if bar_y is not None and self.prev_bar_y is not None:
+            bar_velocity = bar_y - self.prev_bar_y 
+            # Acceleration Up: (prev_v - curr_v) 
+            # Positive value when slowing down descent or speeding up ascent
+            acceleration_up = self.prev_bar_velocity - bar_velocity
+
+        self.prev_bar_velocity = bar_velocity
 
         # Update Hip Baseline
         if hip_y is not None:
@@ -126,10 +139,11 @@ class RepStateMachine:
             if elbow_depth_metric > self.current_rep_data["max_elbow_depth_ratio"]:
                  self.current_rep_data["max_elbow_depth_ratio"] = elbow_depth_metric
 
-        # Bar velocity
-        bar_velocity = 0
-        if self.prev_bar_y is not None:
-            bar_velocity = bar_y - self.prev_bar_y 
+            # Track Max Acceleration (Normalized by Torso)
+            if torso_len > 0:
+                acc_ratio = acceleration_up / torso_len
+                if acc_ratio > self.current_rep_data["max_upward_acceleration_ratio"]:
+                    self.current_rep_data["max_upward_acceleration_ratio"] = acc_ratio
         
         # --- Transitions ---
         if self.current_state == self.STATE_IDLE:
@@ -246,8 +260,18 @@ class WorkoutAnalyzer:
                             cv2.rectangle(annotated_frame, (bar_box[0], bar_box[1]), (bar_box[2], bar_box[3]), COLOR_YELLOW, 2)
                             break 
                 
-                current_bar_y = float(bar_box[3]) if bar_box else None
-                current_bar_x = float((bar_box[0] + bar_box[2]) / 2) if bar_box else None
+                current_bar_y_raw = float(bar_box[3]) if bar_box else None
+                current_bar_x_raw = float((bar_box[0] + bar_box[2]) / 2) if bar_box else None
+                
+                current_bar_y = None
+                current_bar_x = None
+
+                if bar_box:
+                    if 'bar_x' not in filters:
+                        filters['bar_x'] = OneEuroFilter(current_time, current_bar_x_raw)
+                        filters['bar_y'] = OneEuroFilter(current_time, current_bar_y_raw)
+                    current_bar_x = filters['bar_x'](current_time, current_bar_x_raw)
+                    current_bar_y = filters['bar_y'](current_time, current_bar_y_raw)
                 
                 # --- MediaPipe Pose ---
                 rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)

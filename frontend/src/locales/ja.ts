@@ -47,5 +47,9 @@ export const ja: Dictionary = {
     depth: 'ボトム深さ',
     maxDeviation: '浮き幅',
     margin: '余裕',
+    bounceTolerance: 'バウンド許容値',
+    bounceToleranceDesc: '衝撃（加速度）の許容範囲を調整します',
+    bounce: 'バウンド',
+    maxAcceleration: '最大衝撃',
   },
 };

@@ -22,6 +22,7 @@ export interface RepData {
   max_hip_deviation_ratio: number;
   min_elbow_depth_ratio: number;
   max_elbow_depth_ratio: number;
+  max_upward_acceleration_ratio: number;
   rep_duration: number;
 }
 

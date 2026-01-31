@@ -17,7 +17,8 @@ export const RepAnalysisPanel: React.FC<RepAnalysisPanelProps> = ({ analysis }) 
   // Default Settings
   const [settings, setSettings] = useState({
     hipLiftTolerance: 0.15, // 15% deviation allowed
-    depthTolerance: -0.05   // Allow 5% above shoulder (negative means above)
+    depthTolerance: -0.05,  // Allow 5% above shoulder (negative means above)
+    bounceTolerance: 0.10   // 10% acceleration tolerance
   });
 
   const evaluations = useRepEvaluation(analysis.reps, settings);
@@ -62,6 +63,19 @@ export const RepAnalysisPanel: React.FC<RepAnalysisPanelProps> = ({ analysis }) 
             <p className="text-xs text-muted-foreground">
               {t.repPanel.depthToleranceDesc}
             </p>
+
+            <Slider
+              label={t.repPanel.bounceTolerance}
+              valueLabel={`${(settings.bounceTolerance * 100).toFixed(0)}%`}
+              min={0.01}
+              max={0.50}
+              step={0.01}
+              value={settings.bounceTolerance}
+              onChange={(e) => setSettings({ ...settings, bounceTolerance: parseFloat(e.target.value) })}
+            />
+            <p className="text-xs text-muted-foreground">
+              {t.repPanel.bounceToleranceDesc}
+            </p>
           </div>
 
           <div className="pt-4 border-t">
@@ -103,7 +117,7 @@ export const RepAnalysisPanel: React.FC<RepAnalysisPanelProps> = ({ analysis }) 
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4 text-sm mt-3">
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm mt-3">
                     {/* Hip Lift Metric */}
                     <div className="space-y-1">
                       <div className="flex items-center gap-1 text-muted-foreground">
@@ -123,6 +137,17 @@ export const RepAnalysisPanel: React.FC<RepAnalysisPanelProps> = ({ analysis }) 
                       </div>
                       <div className="font-medium">
                         {t.repPanel.margin}: <span className={rep.isShallowFail ? "text-destructive" : ""}>{(rep.data.max_elbow_depth_ratio * 100).toFixed(1)}%</span>
+                      </div>
+                    </div>
+
+                    {/* Bounce Metric */}
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-1 text-muted-foreground">
+                        <span>{t.repPanel.bounce}</span>
+                        {rep.isBounceFail ? <XCircle className="w-4 h-4 text-destructive" /> : <CheckCircle2 className="w-4 h-4 text-green-500" />}
+                      </div>
+                      <div className="font-medium">
+                        {t.repPanel.maxAcceleration}: <span className={rep.isBounceFail ? "text-destructive" : ""}>{(rep.data.max_upward_acceleration_ratio * 100).toFixed(1)}%</span>
                       </div>
                     </div>
                   </div>

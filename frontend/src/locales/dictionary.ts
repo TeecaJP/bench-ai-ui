@@ -45,5 +45,9 @@ export type Dictionary = {
     depth: string;
     maxDeviation: string;
     margin: string;
+    bounceTolerance: string;
+    bounceToleranceDesc: string;
+    bounce: string;
+    maxAcceleration: string;
   };
 };
