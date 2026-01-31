@@ -27,6 +27,8 @@ export type Dictionary = {
     duration: string;
     barHeightTitle: string;
     barHeightDesc: string;
+    aiFeedback: string;
+    aiFeedbackDesc: string;
   };
   repPanel: {
     title: string;

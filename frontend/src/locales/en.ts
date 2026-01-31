@@ -29,6 +29,8 @@ export const en: Dictionary = {
     duration: 'Duration',
     barHeightTitle: 'Bar Height Over Time',
     barHeightDesc: 'Vertical position of the bar during the workout (lower values indicate bar is closer to chest)',
+    aiFeedback: 'AI Coach Feedback',
+    aiFeedbackDesc: 'Personalized coaching based on your performance metrics.',
   },
   repPanel: {
     title: 'Rep Analysis',

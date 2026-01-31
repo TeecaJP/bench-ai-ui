@@ -26,6 +26,7 @@ model Video {
   totalFrames       Int?
   fps               Int?
   videoDuration     Float?
+  llmFeedback       String?
   
   // Timestamps
   createdAt         DateTime @default(now())

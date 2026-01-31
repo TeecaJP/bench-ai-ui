@@ -29,6 +29,8 @@ export const ja: Dictionary = {
     duration: '動画時間',
     barHeightTitle: 'バーの高さ推移',
     barHeightDesc: '動作中のバーの垂直位置グラフ (値が小さいほど胸に近い位置)',
+    aiFeedback: 'AIコーチのアドバイス',
+    aiFeedbackDesc: '解析データに基づいたパーソナライズされた診断結果です。',
   },
   repPanel: {
     title: 'レップ分析',

@@ -177,6 +177,7 @@ async function pollForCompletion(videoId: string, outputPath: string) {
             totalFrames: analysisResults.total_frames,
             fps: analysisResults.fps,
             videoDuration: analysisResults.video_duration,
+            llmFeedback: analysisResults.llm_feedback,
           },
         })
 

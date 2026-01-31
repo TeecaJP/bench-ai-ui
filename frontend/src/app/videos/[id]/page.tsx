@@ -168,6 +168,24 @@ export default function VideoDetailPage({ params }: VideoDetailPageProps) {
                 </div>
               </Card>
 
+              {/* 1.5. AI Coach Feedback Section */}
+              {video.llmFeedback && (
+                <Card className="p-6 border-l-4 border-l-primary bg-primary/5">
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center gap-2 text-primary font-bold">
+                      <span className="text-lg">✨</span>
+                      {t.analysis.aiFeedback}
+                    </div>
+                    <p className="text-sm text-muted-foreground italic mb-2">
+                      {t.analysis.aiFeedbackDesc}
+                    </p>
+                    <div className="text-sm leading-relaxed whitespace-pre-wrap text-foreground bg-background/50 p-4 rounded-md border border-primary/10">
+                      {video.llmFeedback}
+                    </div>
+                  </div>
+                </Card>
+              )}
+
               {/* 2. Analysis Panel (Sliders + Rep List) */}
               <div className="rounded-lg">
                 {/* Note: RepAnalysisPanel now handles its own layout (Settings + List) */}

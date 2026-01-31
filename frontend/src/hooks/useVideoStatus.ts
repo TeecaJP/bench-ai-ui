@@ -25,6 +25,7 @@ interface Video {
   totalFrames: number | null
   fps: number | null
   videoDuration: number | null
+  llmFeedback: string | null
   createdAt: string
   updatedAt: string
   analysisData?: AnalysisDataPoint[]

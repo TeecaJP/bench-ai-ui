@@ -7,7 +7,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from typing import Dict, List, Optional
 import os
+from dotenv import load_dotenv
 from app.logic import WorkoutAnalyzer
+from app.llm import GeminiClient
+
+# Load environment variables
+load_dotenv()
 
 app = FastAPI(
     title="Workout Analysis API",
@@ -64,6 +69,7 @@ class AnalyzeResponse(BaseModel):
     fps: int
     video_duration: float
     processed_video_path: str = Field(..., description="Path to the generated processed video")
+    llm_feedback: Optional[str] = Field(None, description="AI-generated coaching feedback")
     
     class Config:
         json_schema_extra = {

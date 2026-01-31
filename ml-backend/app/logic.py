@@ -11,6 +11,7 @@ from collections import deque
 from typing import Dict, List, Optional, Tuple, Any
 import os
 import torch
+from app.llm import GeminiClient
 
 # PyTorch 2.6 Global Fix: Monkey patch torch.load to use weights_only=False by default
 _original_torch_load = torch.load
@@ -200,6 +201,7 @@ class WorkoutAnalyzer:
         self.yolo_model = None
         self.mp_pose = mp.solutions.pose
         self.mp_drawing = mp.solutions.drawing_utils
+        self.llm = GeminiClient()
 
     def _load_models(self):
         if not os.path.exists(self.model_path):
@@ -428,7 +430,8 @@ class WorkoutAnalyzer:
             "reps": sm.completed_reps, # NEW: List of Reps with metrics
             "fps": fps,
             "total_frames": total_frames,
-            "video_duration": total_frames / fps if fps > 0 else 0
+            "video_duration": total_frames / fps if fps > 0 else 0,
+            "llm_feedback": self.llm.generate_feedback(sm.completed_reps)
         }
         
         import json
