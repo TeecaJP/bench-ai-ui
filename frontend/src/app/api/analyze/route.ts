@@ -95,9 +95,22 @@ async function pollForCompletion(videoId: string, outputPath: string) {
 
     try {
       // Check if processed video exists
-      const localPath = outputPath.replace('/app/storage/', 'storage/')
+      // Backend returns absolute path inside container: /app/storage/...
+      // Frontend container also sees this at /app/storage/... 
+      // BUT, let's verify if we need to adjust.
+      // If we are running in Docker, /app/storage is correct.
+      // If running locally, we might need adjustments.
+      // Let's rely on the absolute path if it exists, otherwise try relative.
       
-        if (fs.existsSync(localPath)) {
+      let localPath = outputPath;
+      if (!fs.existsSync(localPath)) {
+          // Try converting /app/storage -> ./storage (for local dev if needed)
+           if (localPath.startsWith('/app/storage')) {
+               localPath = localPath.replace('/app/storage', 'storage');
+           }
+      }
+      
+      if (fs.existsSync(localPath)) {
         // Check if JSON result file exists
         const jsonPath = localPath.replace('.mp4', '.json')
         

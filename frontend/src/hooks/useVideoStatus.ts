@@ -28,6 +28,7 @@ interface Video {
   createdAt: string
   updatedAt: string
   analysisData?: AnalysisDataPoint[]
+  reps?: any[] // Using any for now to avoid strict dependency loop, or duplicate the interface.
 }
 
 interface UseVideoStatusOptions {

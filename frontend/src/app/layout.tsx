@@ -10,6 +10,8 @@ export const metadata: Metadata = {
   description: "Analyze your bench press form using computer vision",
 }
 
+import { Providers } from "./providers"
+
 export default function RootLayout({
   children,
 }: {
@@ -18,10 +20,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} h-screen overflow-hidden`}>
-        <div className="h-full flex flex-col">
-          <Header />
-          <main className="flex-1 overflow-hidden">{children}</main>
-        </div>
+        <Providers>
+          <div className="h-full flex flex-col">
+            <Header />
+            <main className="flex-1 overflow-hidden">{children}</main>
+          </div>
+        </Providers>
       </body>
     </html>
   )

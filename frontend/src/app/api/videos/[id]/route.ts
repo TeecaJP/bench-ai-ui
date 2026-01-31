@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
+import fs from "fs"
+import path from "path"
 
 export async function GET(
   request: NextRequest,
@@ -10,78 +12,55 @@ export async function GET(
       where: { id: params.id },
       include: {
         analysisData: {
-          orderBy: { frame: 'asc' }
+          orderBy: {
+            frame: 'asc'
+          }
         }
       }
     })
 
     if (!video) {
-      return NextResponse.json({ error: "Video not found" }, { status: 404 })
+      return NextResponse.json(
+        { error: "Video not found" },
+        { status: 404 }
+      )
     }
 
-    return NextResponse.json(video)
+    // [New] Dynamic Rep Data Injection
+    // Since 'reps' is a complex object not in the DB, we read it from the JSON file on disk.
+    let reps = [];
+    if (video.processedPath) {
+        let jsonPath = video.processedPath.replace('.mp4', '.json');
+        
+        // Robust path check (Docker vs Local)
+        if (!fs.existsSync(jsonPath)) {
+             if (jsonPath.startsWith('/app/storage')) {
+                 jsonPath = jsonPath.replace('/app/storage', 'storage');
+             }
+        }
+
+        if (fs.existsSync(jsonPath)) {
+            try {
+                const fileContent = fs.readFileSync(jsonPath, 'utf-8');
+                const jsonData = JSON.parse(fileContent);
+                if (jsonData.reps) {
+                    reps = jsonData.reps;
+                }
+            } catch (jsonErr) {
+                console.error("Failed to read analysis JSON:", jsonErr);
+            }
+        }
+    }
+
+    // Return combined data
+    return NextResponse.json({
+        ...video,
+        reps: reps
+    })
   } catch (error) {
-    console.error("Error fetching video:", error)
+    console.error("Fetch video error:", error)
     return NextResponse.json(
       { error: "Failed to fetch video" },
-      { status: 500 }
-    )
-  }
-}
-
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
-  try {
-    const videoId = params.id
-
-    // Get video info before deleting
-    const video = await prisma.video.findUnique({
-      where: { id: videoId }
-    })
-
-    if (!video) {
-      return NextResponse.json({ error: "Video not found" }, { status: 404 })
-    }
-
-    // Delete from database (cascades to analysisDataPoints)
-    await prisma.video.delete({
-      where: { id: videoId }
-    })
-
-    // Delete physical files via backend API
-    const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
-    const queryParams = new URLSearchParams()
-    if (video.originalPath) {
-      queryParams.append('original_path', video.originalPath)
-    }
-    if (video.processedPath) {
-      queryParams.append('processed_path', video.processedPath)
-    }
-
-    try {
-      const response = await fetch(
-        `${backendUrl}/videos/${videoId}?${queryParams.toString()}`,
-        { method: 'DELETE' }
-      )
-      
-      if (!response.ok) {
-        console.error(`Backend file deletion failed: ${response.status}`)
-      }
-    } catch (error) {
-      console.error('Failed to delete files from backend:', error)
-      // Continue anyway - DB is already deleted
-    }
-
-    return NextResponse.json({
-      success: true,
-      message: "Video deleted successfully"
-    })
-  } catch (error) {
-    console.error("Delete video error:", error)
-    return NextResponse.json(
-      { error: "Failed to delete video" },
       { status: 500 }
     )
   }

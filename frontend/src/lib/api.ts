@@ -15,10 +15,23 @@ export interface TimeSeriesDataPoint {
   barDetected: boolean;
 }
 
+export interface RepData {
+  start_time: number | null;
+  end_time: number | null;
+  max_hip_deviation_px: number;
+  max_hip_deviation_ratio: number;
+  min_elbow_depth_ratio: number;
+  max_elbow_depth_ratio: number;
+  rep_duration: number;
+}
+
 export interface AnalyzeResponse {
   overall_status: string;
-  hip_lift_status: boolean;
-  shallow_rep_status: boolean;
+  // Legacy fields (optional or deprecated)
+  hip_lift_status?: string; 
+  shallow_rep_status?: string;
+  // New structured data
+  reps: RepData[];
   time_series_data: TimeSeriesDataPoint[];
   total_frames: number;
   fps: number;

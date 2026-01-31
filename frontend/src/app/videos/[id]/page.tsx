@@ -1,12 +1,15 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { ArrowLeft } from "lucide-react"
 import { useVideoStatus } from "@/hooks/useVideoStatus"
+import { useTranslation } from "@/hooks/useTranslation" // i18n
 import { ProcessingStatus, LoadingSpinner } from "@/components/molecules/LoadingStatus"
 import { Badge } from "@/components/atoms/Badge"
 import { BarHeightChart } from "@/components/organisms/BarHeightChart"
+import { RepAnalysisPanel } from "@/components/organisms/RepAnalysisPanel"
+import { Card } from "@/components/atoms/Card"
 
 interface VideoDetailPageProps {
   params: {
@@ -16,6 +19,7 @@ interface VideoDetailPageProps {
 
 export default function VideoDetailPage({ params }: VideoDetailPageProps) {
   const router = useRouter()
+  const { t } = useTranslation() // Hook
   const { video, isLoading, error, isProcessing, isCompleted } = useVideoStatus({
     videoId: params.id,
     pollingInterval: 5000,
@@ -48,7 +52,7 @@ export default function VideoDetailPage({ params }: VideoDetailPageProps) {
   if (isLoading) {
     return (
       <div className="h-full flex items-center justify-center">
-        <LoadingSpinner text="Loading video..." />
+        <LoadingSpinner text={t.common.loading} />
       </div>
     )
   }
@@ -62,7 +66,7 @@ export default function VideoDetailPage({ params }: VideoDetailPageProps) {
             onClick={() => router.push('/videos')}
             className="mt-4 px-4 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90"
           >
-            Back to Library
+            {t.common.backToLibrary}
           </button>
         </div>
       </div>
@@ -72,129 +76,120 @@ export default function VideoDetailPage({ params }: VideoDetailPageProps) {
   if (isProcessing) {
     return (
       <div className="h-full flex items-center justify-center">
-        <ProcessingStatus 
-          message="Processing video..."
-          subMessage="This may take several minutes. You can close this page and come back later."
+        <ProcessingStatus
+          message={t.common.processing}
+          subMessage={t.common.processingDesc}
         />
       </div>
     )
   }
 
+  // Helper to map status to text
+  const getOverallStatusText = (status: string | null) => {
+    if (!status) return t.common.na;
+    if (status.includes('FAIL')) return t.status.failed;
+    if (status === 'OK') return t.status.ok;
+    return status;
+  }
+
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col bg-background">
       {/* Header Bar */}
-      <div className="border-b px-6 py-4 flex-shrink-0">
+      <div className="border-b px-6 py-4 flex-shrink-0 bg-background/95 backdrop-blur z-10">
         <button
           onClick={() => router.push('/videos')}
           className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-3"
         >
           <ArrowLeft className="h-4 w-4" />
-          Back to Library
+          {t.common.backToLibrary}
         </button>
 
-        <h1 className="text-2xl font-bold tracking-tight mb-2">{video.filename}</h1>
-        <div className="flex gap-2">
-          <Badge variant={video.status === 'COMPLETED' ? 'default' : 'secondary'}>
-            {video.status}
-          </Badge>
-          {isCompleted && video.overallStatus && (
-            <Badge variant={video.overallStatus === 'OK' ? 'default' : 'destructive'}>
-              {video.overallStatus}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <h1 className="text-2xl font-bold tracking-tight">{video.filename}</h1>
+          <div className="flex gap-2">
+            <Badge variant={video.status === 'COMPLETED' ? 'default' : 'secondary'}>
+              {video.status}
             </Badge>
-          )}
+            {isCompleted && video.overallStatus && (
+              <Badge variant={video.overallStatus === 'OK' ? 'default' : 'destructive'}>
+                {getOverallStatusText(video.overallStatus)}
+              </Badge>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Main Content Area */}
+      {/* Main Content Area - Dashboard Layout */}
       {isCompleted && video.processedPath ? (
-        <div className="flex-1 overflow-y-auto">
-          <div className="grid grid-cols-1 md:grid-cols-[60%_40%]">
-            {/* Left: Video Player */}
-            <div className="flex items-center justify-center bg-black/5 p-4 h-[40vh] md:h-[60vh]">
-              <video
-                controls
-                className="max-w-full max-h-full object-contain"
-                src={`/api/stream?path=${encodeURIComponent(video.processedPath)}`}
-              >
-                Your browser does not support the video tag.
-              </video>
+        <div className="flex-1 overflow-hidden">
+          <div className="h-full grid grid-cols-1 md:grid-cols-[60%_40%] divide-y md:divide-y-0 md:divide-x">
+
+            {/* Left Column: Video & Chart (Scrollable if needed) */}
+            <div className="h-full flex flex-col overflow-y-auto">
+              {/* Video Player Container */}
+              <div className="bg-black/5 p-4 flex items-center justify-center min-h-[400px] shrink-0">
+                <video
+                  controls
+                  className="max-w-full max-h-[60vh] object-contain shadow-lg rounded-md bg-black"
+                  src={`/api/stream?path=${encodeURIComponent(video.processedPath)}`}
+                >
+                  Your browser does not support the video tag.
+                </video>
+              </div>
+
+              {/* Chart Section */}
+              {video.analysisData && video.analysisData.length > 0 && (
+                <div className="p-6 border-t bg-background">
+                  <BarHeightChart
+                    data={video.analysisData}
+                    title={t.analysis.barHeightTitle}
+                    description={t.analysis.barHeightDesc}
+                  />
+                </div>
+              )}
             </div>
 
-            {/* Right: Stats Panel */}
-            <div className="p-6 border-l">
-              <h2 className="text-xl font-semibold mb-4">Analysis Results</h2>
-              
-              <div className="space-y-4">
-                {/* Overall Status Card */}
-                <div className="rounded-lg border p-4">
-                  <h3 className="font-semibold mb-2">Overall Status</h3>
-                  <div className="mt-2">
-                    <Badge 
-                      variant={video.overallStatus?.includes('GOOD') ? 'default' : 'destructive'}
-                      className="text-lg px-3 py-1"
-                    >
-                      {video.overallStatus || (video.status === 'COMPLETED' ? 'N/A' : 'PROCESSING')}
-                    </Badge>
-                  </div>
-                </div>
+            {/* Right Column: Info & Analysis (Scrollable) */}
+            <div className="h-full overflow-y-auto bg-muted/5 p-6 space-y-6">
 
-                {/* Form Analysis Card */}
-                <div className="rounded-lg border p-4">
-                  <h3 className="font-semibold mb-2">Form Analysis</h3>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between items-center">
-                      <span>Hip Lift:</span>
-                      <Badge variant={video.hipLiftDetected ? 'destructive' : 'default'}>
-                        {video.hipLiftStatus || 'N/A'}
-                      </Badge>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span>Shallow Rep:</span>
-                      <Badge variant={video.shallowRepDetected ? 'destructive' : 'default'}>
-                        {video.shallowRepStatus || 'N/A'}
-                      </Badge>
-                    </div>
-                  </div>
+              {/* 1. Video Info Card */}
+              <Card className="p-4 grid grid-cols-3 gap-4 text-center">
+                <div>
+                  <div className="text-xs text-muted-foreground uppercase">{t.analysis.totalFrames}</div>
+                  <div className="font-mono font-bold text-lg">{video.totalFrames || '-'}</div>
                 </div>
+                <div>
+                  <div className="text-xs text-muted-foreground uppercase">{t.analysis.fps}</div>
+                  <div className="font-mono font-bold text-lg">{video.fps || '-'}</div>
+                </div>
+                <div>
+                  <div className="text-xs text-muted-foreground uppercase">{t.analysis.duration}</div>
+                  <div className="font-mono font-bold text-lg">{video.videoDuration ? `${video.videoDuration.toFixed(1)}s` : '-'}</div>
+                </div>
+              </Card>
 
-                {/* Video Info Card */}
-                <div className="rounded-lg border p-4">
-                  <h3 className="font-semibold mb-2">Video Info</h3>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span>Total Frames:</span>
-                      <span>{video.totalFrames || 'N/A'}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>FPS:</span>
-                      <span>{video.fps || 'N/A'}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Duration:</span>
-                      <span>{video.videoDuration ? `${video.videoDuration.toFixed(1)}s` : 'N/A'}</span>
-                    </div>
+              {/* 2. Analysis Panel (Sliders + Rep List) */}
+              <div className="rounded-lg">
+                {/* Note: RepAnalysisPanel now handles its own layout (Settings + List) */}
+                {/* We pass a custom className to make it fit nicely if needed, but standard block is fine */}
+                {video.reps && video.reps.length > 0 ? (
+                  <RepAnalysisPanel analysis={{ ...video, reps: video.reps } as any} />
+                ) : (
+                  <div className="text-center p-8 text-muted-foreground border border-dashed rounded-lg">
+                    {t.repPanel.noReps}
                   </div>
-                </div>
+                )}
               </div>
+
             </div>
           </div>
-
-          {/* Bar Height Chart - Full Width Below */}
-          {video.analysisData && video.analysisData.length > 0 && (
-            <div className="p-6 border-t">
-              <BarHeightChart 
-                data={video.analysisData} 
-                title="Bar Height Over Time"
-                description="Vertical position of the bar during the workout (lower values indicate bar is closer to chest)"
-              />
-            </div>
-          )}
         </div>
       ) : (
         <div className="flex-1 flex items-center justify-center">
-          <div className="rounded-lg border border-dashed p-12 text-center">
-            <p className="text-muted-foreground">
-              {video.status === 'FAILED' ? 'Analysis failed' : 'No analysis results available'}
+          <div className="rounded-lg border border-dashed p-12 text-center max-w-lg">
+            <LoadingSpinner />
+            <p className="mt-4 text-muted-foreground">
+              {video.status === 'FAILED' ? t.status.failed : t.common.processingDesc}
             </p>
           </div>
         </div>
