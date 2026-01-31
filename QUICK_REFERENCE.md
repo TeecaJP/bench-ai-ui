@@ -12,6 +12,7 @@
 - ✅ ml-backend/pyproject.toml
 - ✅ ml-backend/app/__init__.py
 - ✅ ml-backend/app/main.py (FastAPI)
+- ✅ ml-backend/app/llm.py (Gemini Client)
 - ✅ ml-backend/app/logic.py (WorkoutAnalyzer class)
 - ✅ ml-backend/tests/test_main.py
 
@@ -133,9 +134,11 @@ cd frontend && bun test
 ✅ Health check endpoints  
 ✅ Video analysis endpoint with validation  
 ✅ WorkoutAnalyzer class (YOLO + MediaPipe)  
-✅ Hip lift detection  
-✅ Shallow rep detection  
-✅ Time-series data collection  
+✅ Hip lift detection (Robust relative metric)
+✅ Shallow rep detection (Phase-aware state machine)
+✅ Bounce/Bounding detection (Acceleration based)
+✅ AI Coaching Feedback (Google Gemini)
+✅ Time-series data collection with OneEuroFilter
 ✅ Comprehensive error handling  
 
 ### Frontend

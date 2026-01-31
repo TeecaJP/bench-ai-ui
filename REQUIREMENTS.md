@@ -96,12 +96,16 @@ The application uses a **fixed-height, no-scroll dashboard layout** where all cr
 5. **Result Persistence**: Backend saves analysis results to JSON file alongside video; Frontend reads this JSON to update DB.
 6. **H.264 Encoding**: Videos automatically converted to H.264 via ffmpeg for browser compatibility
 
-### Status Values
+### Status Values (Aggregated from Rep-by-Rep metrics)
 - `STATUS_OK`: "OK"
-- `STATUS_FAIL_HIP`: "FAIL: HIP LIFT"
-- `STATUS_FAIL_SHALLOW`: "FAIL: ELBOW DEPTH"
-- `STATUS_EGO_LIFT`: Overall status when any failure detected
-- `STATUS_GOOD_REP`: Overall success status
+- `STATUS_GOOD_REP`: Overall success status (all reps pass thresholds)
+- `STATUS_EGO_LIFT`: Overall status when any failure is detected in a set
+- **Legacy Support**: `STATUS_FAIL_HIP` and `STATUS_FAIL_SHALLOW` are maintained for backward compatibility in certain views.
+
+### D. Advanced Analysis Logic
+- **Normalization**: All distance metrics are normalized by `torso_length` (distance between shoulder and hip).
+- **Line Filter**: `OneEuroFilter` is applied to all key landmark coordinates to remove jitter.
+- **State Machine**: Six states (`IDLE`, `SETUP`, `DESCEND`, `BOTTOM`, `ASCEND`, `COMPLETE`) ensure precise rep phase tracking.
 
 **Architecture Benefits**:
 - ✅ Non-blocking: User can close browser during processing
@@ -178,7 +182,8 @@ The application uses a **fixed-height, no-scroll dashboard layout** where all cr
 ├── ml-backend/
 │   ├── app/
 │   │   ├── main.py
-│   │   └── logic.py (The refactored ML class)
+│   │   ├── logic.py (The refactored ML class)
+│   │   └── llm.py (Gemini integration logic)
 │   ├── models/
 │   │   └── best.pt (YOLO model)
 │   ├── requirements.txt

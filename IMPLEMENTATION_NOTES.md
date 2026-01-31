@@ -32,6 +32,12 @@ All phases have been implemented successfully. Here's what was created:
 - Frontend: VideoUploader.test.tsx (Vitest + Testing Library)
 - Scripts: health_check.sh (backend health verification)
 
+## ✅ Phase 6: Advanced Analysis
+- **Bounding Detection**: Integrated acceleration tracking in `RepStateMachine` to detect chest bouncing.
+- **AI Coaching**: Created `llm.py` using Google Gemini to provide personalized feedback for each workout session.
+- **Jitter Removal**: Implemented `OneEuroFilter` for smooth coordinate tracking.
+- **Robust Metrics**: Moved from absolute pixels to torso-normalized ratios for all indicators.
+
 ## 📋 Next Steps
 
 1. **Place YOLO Model**:

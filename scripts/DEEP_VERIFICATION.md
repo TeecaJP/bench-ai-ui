@@ -19,8 +19,11 @@ Comprehensive data integrity and schema validation for the ML processing pipelin
 ### 3. JSON Schema Validation
 - Verifies all required fields are present:
   - `overallStatus`
-  - `hipLiftDetected`
-  - `shallowRepDetected`
+  - `overallStatus`
+  - `hipLiftDetected` (Legacy)
+  - `shallowRepDetected` (Legacy)
+  - `reps` (List of objects with hip/depth/acceleration metrics)
+  - `llm_feedback` (Generated string)
   - `totalFrames`
   - `fps`
   - `videoDuration`
