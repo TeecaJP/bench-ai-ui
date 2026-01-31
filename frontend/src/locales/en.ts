@@ -7,6 +7,9 @@ export const en: Dictionary = {
     processing: 'Processing video...',
     processingDesc: 'This may take several minutes. You can close this page and come back later.',
     na: 'N/A',
+    summary: 'Summary',
+    reps: 'Reps',
+    settings: 'Settings',
   },
   status: {
     pending: 'PENDING',

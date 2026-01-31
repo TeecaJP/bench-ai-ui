@@ -20,7 +20,7 @@ interface VideoCardProps {
 
 export function VideoCard({ video, onDelete }: VideoCardProps) {
   const [isDeleting, setIsDeleting] = useState(false)
-  
+
   // Use polling hook for real-time status updates if processing
   const { video: liveVideo } = useVideoStatus({
     videoId: video.id,
@@ -72,7 +72,7 @@ export function VideoCard({ video, onDelete }: VideoCardProps) {
               <Video className="h-5 w-5 text-muted-foreground flex-shrink-0" />
               <h3 className="font-semibold truncate">{video.filename}</h3>
             </div>
-            
+
             <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
               <Clock className="h-4 w-4" />
               <span>{formatDistanceToNow(new Date(video.createdAt), { addSuffix: true })}</span>
@@ -82,12 +82,6 @@ export function VideoCard({ video, onDelete }: VideoCardProps) {
               <Badge variant={getStatusColor(currentStatus)}>
                 {currentStatus}
               </Badge>
-              
-              {currentStatus === 'COMPLETED' && currentOverallStatus && (
-                <Badge variant={currentOverallStatus === 'OK' ? 'default' : 'destructive'}>
-                  {currentOverallStatus}
-                </Badge>
-              )}
             </div>
           </div>
 

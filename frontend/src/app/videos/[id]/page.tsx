@@ -8,8 +8,11 @@ import { useTranslation } from "@/hooks/useTranslation" // i18n
 import { ProcessingStatus, LoadingSpinner } from "@/components/molecules/LoadingStatus"
 import { Badge } from "@/components/atoms/Badge"
 import { BarHeightChart } from "@/components/organisms/BarHeightChart"
-import { RepAnalysisPanel } from "@/components/organisms/RepAnalysisPanel"
+import { RepEvaluationList, EvaluationSettings } from "@/components/organisms/RepAnalysisPanel"
 import { Card } from "@/components/atoms/Card"
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/atoms/Tabs"
+import { useRepEvaluation } from "@/hooks/useRepEvaluation"
+import { useState } from "react"
 
 interface VideoDetailPageProps {
   params: {
@@ -25,6 +28,16 @@ export default function VideoDetailPage({ params }: VideoDetailPageProps) {
     pollingInterval: 5000,
     enabled: true
   })
+
+  // Settings State
+  const [settings, setSettings] = useState({
+    hipLiftTolerance: 0.15,
+    depthTolerance: -0.05,
+    bounceTolerance: 0.10
+  })
+
+  // Evaluations
+  const evaluations = useRepEvaluation(video?.reps || [], settings);
 
   // Auto-trigger analysis for PENDING videos
   useEffect(() => {
@@ -110,11 +123,6 @@ export default function VideoDetailPage({ params }: VideoDetailPageProps) {
             <Badge variant={video.status === 'COMPLETED' ? 'default' : 'secondary'}>
               {video.status}
             </Badge>
-            {isCompleted && video.overallStatus && (
-              <Badge variant={video.overallStatus === 'OK' ? 'default' : 'destructive'}>
-                {getOverallStatusText(video.overallStatus)}
-              </Badge>
-            )}
           </div>
         </div>
       </div>
@@ -130,7 +138,7 @@ export default function VideoDetailPage({ params }: VideoDetailPageProps) {
               <div className="bg-black/5 p-4 flex items-center justify-center min-h-[400px] shrink-0">
                 <video
                   controls
-                  className="max-w-full max-h-[60vh] object-contain shadow-lg rounded-md bg-black"
+                  className="max-w-full max-h-[45vh] object-contain shadow-lg rounded-md bg-black"
                   src={`/api/stream?path=${encodeURIComponent(video.processedPath)}`}
                 >
                   Your browser does not support the video tag.
@@ -150,55 +158,72 @@ export default function VideoDetailPage({ params }: VideoDetailPageProps) {
             </div>
 
             {/* Right Column: Info & Analysis (Scrollable) */}
-            <div className="h-full overflow-y-auto bg-muted/5 p-6 space-y-6">
+            <div className="h-full overflow-y-auto bg-muted/5">
+              <Tabs defaultValue="summary" className="h-full flex flex-col">
+                <TabsList className="px-6 py-2 sticky top-0 bg-background/95 backdrop-blur z-20">
+                  <TabsTrigger value="summary">{t.common.summary}</TabsTrigger>
+                  <TabsTrigger value="reps">{t.common.reps}</TabsTrigger>
+                  <TabsTrigger value="settings">{t.common.settings}</TabsTrigger>
+                </TabsList>
 
-              {/* 1. Video Info Card */}
-              <Card className="p-4 grid grid-cols-3 gap-4 text-center">
-                <div>
-                  <div className="text-xs text-muted-foreground uppercase">{t.analysis.totalFrames}</div>
-                  <div className="font-mono font-bold text-lg">{video.totalFrames || '-'}</div>
+                <div className="flex-1 p-6 space-y-6">
+                  {/* Summary Tab */}
+                  <TabsContent value="summary" className="space-y-6 m-0">
+                    {/* 1. Video Info Card */}
+                    <Card className="p-4 grid grid-cols-3 gap-4 text-center">
+                      <div>
+                        <div className="text-xs text-muted-foreground uppercase">{t.analysis.totalFrames}</div>
+                        <div className="font-mono font-bold text-lg">{video.totalFrames || '-'}</div>
+                      </div>
+                      <div>
+                        <div className="text-xs text-muted-foreground uppercase">{t.analysis.fps}</div>
+                        <div className="font-mono font-bold text-lg">{video.fps || '-'}</div>
+                      </div>
+                      <div>
+                        <div className="text-xs text-muted-foreground uppercase">{t.analysis.duration}</div>
+                        <div className="font-mono font-bold text-lg">{video.videoDuration ? `${video.videoDuration.toFixed(1)}s` : '-'}</div>
+                      </div>
+                    </Card>
+
+                    {/* AI Coach Feedback Section */}
+                    {video.llmFeedback && (
+                      <Card className="p-6 border-l-4 border-l-primary bg-primary/5">
+                        <div className="flex flex-col gap-2">
+                          <div className="flex items-center gap-2 text-primary font-bold">
+                            <span className="text-lg">✨</span>
+                            {t.analysis.aiFeedback}
+                          </div>
+                          <p className="text-sm text-muted-foreground italic mb-2">
+                            {t.analysis.aiFeedbackDesc}
+                          </p>
+                          <div className="text-sm leading-relaxed whitespace-pre-wrap text-foreground bg-background/50 p-4 rounded-md border border-primary/10">
+                            {video.llmFeedback}
+                          </div>
+                        </div>
+                      </Card>
+                    )}
+                  </TabsContent>
+
+                  {/* Reps Tab */}
+                  <TabsContent value="reps" className="m-0">
+                    {video.reps && video.reps.length > 0 ? (
+                      <RepEvaluationList evaluations={evaluations} />
+                    ) : (
+                      <div className="text-center p-8 text-muted-foreground border border-dashed rounded-lg">
+                        {t.repPanel.noReps}
+                      </div>
+                    )}
+                  </TabsContent>
+
+                  {/* Settings Tab */}
+                  <TabsContent value="settings" className="m-0">
+                    <EvaluationSettings
+                      settings={settings}
+                      onSettingsChange={(newSettings: any) => setSettings(newSettings)}
+                    />
+                  </TabsContent>
                 </div>
-                <div>
-                  <div className="text-xs text-muted-foreground uppercase">{t.analysis.fps}</div>
-                  <div className="font-mono font-bold text-lg">{video.fps || '-'}</div>
-                </div>
-                <div>
-                  <div className="text-xs text-muted-foreground uppercase">{t.analysis.duration}</div>
-                  <div className="font-mono font-bold text-lg">{video.videoDuration ? `${video.videoDuration.toFixed(1)}s` : '-'}</div>
-                </div>
-              </Card>
-
-              {/* 1.5. AI Coach Feedback Section */}
-              {video.llmFeedback && (
-                <Card className="p-6 border-l-4 border-l-primary bg-primary/5">
-                  <div className="flex flex-col gap-2">
-                    <div className="flex items-center gap-2 text-primary font-bold">
-                      <span className="text-lg">✨</span>
-                      {t.analysis.aiFeedback}
-                    </div>
-                    <p className="text-sm text-muted-foreground italic mb-2">
-                      {t.analysis.aiFeedbackDesc}
-                    </p>
-                    <div className="text-sm leading-relaxed whitespace-pre-wrap text-foreground bg-background/50 p-4 rounded-md border border-primary/10">
-                      {video.llmFeedback}
-                    </div>
-                  </div>
-                </Card>
-              )}
-
-              {/* 2. Analysis Panel (Sliders + Rep List) */}
-              <div className="rounded-lg">
-                {/* Note: RepAnalysisPanel now handles its own layout (Settings + List) */}
-                {/* We pass a custom className to make it fit nicely if needed, but standard block is fine */}
-                {video.reps && video.reps.length > 0 ? (
-                  <RepAnalysisPanel analysis={{ ...video, reps: video.reps } as any} />
-                ) : (
-                  <div className="text-center p-8 text-muted-foreground border border-dashed rounded-lg">
-                    {t.repPanel.noReps}
-                  </div>
-                )}
-              </div>
-
+              </Tabs>
             </div>
           </div>
         </div>

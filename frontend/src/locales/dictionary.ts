@@ -5,6 +5,9 @@ export type Dictionary = {
     processing: string;
     processingDesc: string;
     na: string;
+    summary: string;
+    reps: string;
+    settings: string;
   };
   status: {
     pending: string;

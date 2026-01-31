@@ -7,6 +7,9 @@ export const ja: Dictionary = {
     processing: '動画を処理中...',
     processingDesc: '数分かかる場合があります。このページを閉じても処理は継続されます。',
     na: 'データなし',
+    summary: '概要',
+    reps: 'レップ',
+    settings: '設定',
   },
   status: {
     pending: '待機中',

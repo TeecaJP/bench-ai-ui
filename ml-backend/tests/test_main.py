@@ -66,6 +66,7 @@ class TestAnalyzeEndpoint:
             "total_frames": 300,
             "fps": 30,
             "video_duration": 10.0,
+            "llm_feedback": "Great form!"
         }
         
         # Make request
@@ -126,6 +127,7 @@ class TestAnalyzeEndpoint:
             "total_frames": 150,
             "fps": 30,
             "video_duration": 5.0,
+            "llm_feedback": "Hip lift detected."
         }
         
         response = client.post(
@@ -222,6 +224,7 @@ class TestAnalyzeEndpointIntegration:
             "total_frames": 900,
             "fps": 30,
             "video_duration": 30.0,
+            "llm_feedback": "Good consistency."
         }
         
         response = client.post(
