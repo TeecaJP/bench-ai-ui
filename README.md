@@ -174,6 +174,14 @@ The application follows a monorepo structure with Docker Compose orchestration:
 - **Frontend**: Vitest + React Testing Library for component tests
 - **Integration**: Health check script validates service availability
 
+## Documentation
+
+- **[Stats Logic Documentation (日本語)](STATS_LOGIC_DOCUMENTATION.md)** - 処理後動画のスタッツ決定ロジックの詳細説明
+- **[Stats Logic Overview (English)](docs/STATS_LOGIC_OVERVIEW_EN.md)** - Overview of how Overall Status and Form Analysis are determined
+- **[Implementation Notes](IMPLEMENTATION_NOTES.md)** - Technical implementation details
+- **[Quick Reference](QUICK_REFERENCE.md)** - Common commands and workflows
+- **[Troubleshooting](TROUBLESHOOTING.md)** - Common issues and solutions
+
 ## License
 
 MIT
